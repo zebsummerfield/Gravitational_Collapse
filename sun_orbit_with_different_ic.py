@@ -14,8 +14,8 @@ sun2_particles = ic.create_particles(dt=dt)
 sun2_particles[0].name = 'orbit with updated initial conditions'
 year_in_s = ic.year_in_s
 
-fig, ax = plt.subplots(figsize=(5,5))
-ax.set(ylim=[-4e10,1e10], xlim=[-2.5e10,2.5e10], xlabel='x [ $m$ ]', ylabel='y [ $m$ ]')
+fig, ax = plt.subplots(figsize=(4,8), layout='tight')
+ax.set(ylim=[-4e10,1e10], xlim=[-1e10,1e10], xlabel='x [ $m$ ]', ylabel='y [ $m$ ]')
 
 for particles in [sun1_particles, sun2_particles]:
     x_pos = [particles[0].pos[0]]
@@ -33,5 +33,4 @@ for particles in [sun1_particles, sun2_particles]:
 
     ax.plot(x_pos, y_pos, label = particles[0].name)
 
-ax.legend()
 plt.show()
