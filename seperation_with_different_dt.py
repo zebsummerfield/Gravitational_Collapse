@@ -3,10 +3,9 @@ Plots the energy and seperation evolutions of the [sun, earth, jupiter] system.
 """
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-from particle import Particle
 import initial_conditions as ic
-import pdb
 
 year_in_s = ic.year_in_s
 dt = np.array([50, 25, 10, 1]) * ic.dt
@@ -16,8 +15,12 @@ def modulus(vector):
 		total = np.sqrt(sum(vector[i]**2 for i in range(3))) 
 		return total
 
-fig, ax = plt.subplots(figsize=(5,5))
+mpl.rcParams["font.size"] = 20
+fig, ax = plt.subplots(figsize=(10,10))
 ax.set(xlabel='Time [yrs]', ylabel='Percentage change in Seperation')
+plt.gcf().set_tight_layout(True) # To prevent the xlabel being cut off
+
+
 
 for index, particles in enumerate(particle_sets):
     time = 0
@@ -37,7 +40,7 @@ for index, particles in enumerate(particle_sets):
             p.set_new_pos()
         seperation.append(modulus(earth.pos - sun.pos))
         
-    ax.plot(time_tracker, (seperation - seperation[0]) / seperation[0], label = f"{int(dt[index] / ic.dt)} day timestep")
+    ax.plot(time_tracker, ((seperation - seperation[0]) / seperation[0]) * 100, label = f"{int(dt[index] / ic.dt)} day timestep")
 
 ax.legend()
 plt.show()

@@ -1,6 +1,7 @@
+
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-from particle import Particle
 import initial_conditions as ic
 
 year_in_s = ic.year_in_s
@@ -14,9 +15,11 @@ def modulus(vector):
 		total = np.sqrt(sum(vector[i]**2 for i in range(3))) 
 		return total
 
-fig, ax = plt.subplots(1, 2, figsize=(10,5))
-ax[0].set(ylim=[-0.01,0.01], xlabel='Time [ $yrs$ ]', ylabel='Fractional Change in Total Energy')
+mpl.rcParams["font.size"] = 20
+fig, ax = plt.subplots(1, 2, figsize=(20,10))
+ax[0].set(ylim=[-1,1], xlabel='Time [ $yrs$ ]', ylabel='Percentage Change in Total Energy')
 ax[1].set(ylim=[0,3e-15], xlabel='Time [ $yrs$ ]', ylabel='Total Momentum / Initial Linear Momentum')
+plt.gcf().set_tight_layout(True) # To prevent the xlabel being cut off
 
 seperation = [modulus(earth.pos - sun.pos)]
 KE = [0]
@@ -56,7 +59,7 @@ for i in range(int(year_in_s/dt)*100):
 	total_energy.append(ke+pe)
 	total_momentum.append((modulus(momentum)))
 	
-ax[0].plot(time_tracker, (total_energy - total_energy[0]) / total_energy[0])
-ax[1].plot(time_tracker, total_momentum / initial_linear_momentum)
+ax[0].plot(time_tracker, ((total_energy - total_energy[0]) / total_energy[0]) * 100, color='green', linewidth=5)
+ax[1].plot(time_tracker, total_momentum / initial_linear_momentum, color='red', linewidth=1)
 
 plt.show()
