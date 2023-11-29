@@ -15,10 +15,10 @@ def modulus(vector):
 		total = np.sqrt(sum(vector[i]**2 for i in range(3))) 
 		return total
 
-mpl.rcParams["font.size"] = 20
+mpl.rcParams["font.size"] = 25
 fig, ax = plt.subplots(1, 2, figsize=(20,10))
 ax[0].set(ylim=[-1,1], xlabel='Time [ $yrs$ ]', ylabel='Percentage Change in Total Energy')
-ax[1].set(ylim=[0,3e-15], xlabel='Time [ $yrs$ ]', ylabel='Total Momentum / Initial Linear Momentum')
+ax[1].set(ylim=[0,3e-15], xlabel='Time [ $yrs$ ]', ylabel='Total Momentum / Total Momentum Magnitude')
 plt.gcf().set_tight_layout(True) # To prevent the xlabel being cut off
 
 seperation = [modulus(earth.pos - sun.pos)]

@@ -15,7 +15,7 @@ def modulus(vector):
 		total = np.sqrt(sum(vector[i]**2 for i in range(3))) 
 		return total
 
-mpl.rcParams["font.size"] = 20
+mpl.rcParams["font.size"] = 25
 fig, ax = plt.subplots(figsize=(10,10))
 ax.set(xlabel='Time [yrs]', ylabel='Percentage change in Seperation')
 plt.gcf().set_tight_layout(True) # To prevent the xlabel being cut off
@@ -40,7 +40,7 @@ for index, particles in enumerate(particle_sets):
             p.set_new_pos()
         seperation.append(modulus(earth.pos - sun.pos))
         
-    ax.plot(time_tracker, ((seperation - seperation[0]) / seperation[0]) * 100, label = f"{int(dt[index] / ic.dt)} day timestep")
+    ax.plot(time_tracker, ((seperation - seperation[0]) / seperation[0]) * 100, label = f"{int(dt[index] / ic.dt)} day timestep", linewidth=4)
 
 ax.legend()
 plt.show()
