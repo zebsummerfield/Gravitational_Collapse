@@ -4,6 +4,7 @@ import distributions
 from utils import *
 import time
 from multiprocessing import Pool
+from barneshut import Node
 
 if __name__ == "__main__":
 
@@ -27,11 +28,6 @@ if __name__ == "__main__":
     print(time.time() - t)
 
     t = time.time()
-    print(particles[0])
-    with Pool() as pool:
-        particles = pool.starmap(permutate_v_multi, [(p, particles) for p in particles])
-    print(particles[0])
-    for p in particles:
-        permutate_pos_multi(p)
-    print(particles[0])
+    tree = Node(np.zeros(3), 1e21, particles)
+    permutate_tree(tree, particles)
     print(time.time() - t)

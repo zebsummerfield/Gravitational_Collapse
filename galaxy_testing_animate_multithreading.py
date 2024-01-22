@@ -22,10 +22,9 @@ scale_length = 3 * 1000 * pc
 
 def perm(particles):
 	with Pool() as pool:
-		print(particles[0].pos)
 		particles = pool.starmap(permutate_v_multi, [(p, particles) for p in particles])
-		particles = pool.map(permutate_pos_multi, particles)
-		print(particles[0].pos)
+	for p in particles:
+		permutate_pos_multi(p)
 	# multithreading creates a new particle instance so need to return it
 	return particles
 

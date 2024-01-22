@@ -27,6 +27,8 @@ def disc_exp(mass:float, Rh:float, num: int) -> np.array:
         while not ok_dist:
             delta = 2 * np.pi * random.random()
             distance = - Rh * np.log(1 - random.uniform(0.2,1))
+            if distance > 1e21:
+                distance = 1e21
             x, y = (np.cos(delta) * distance, np.sin(delta) * distance)
             if all(np.sqrt((x-p[0])**2 + (y-p[1])**2) > 1e19 for p in positions):
                 ok_dist = True
