@@ -3,7 +3,8 @@ File containing the definition of the Particle class.
 """
 
 import numpy as np
-from utils import modulus
+import matplotlib.pyplot as plt
+import math
 
 class Particle():
 	"""
@@ -29,15 +30,29 @@ class Particle():
 		self.v = np.array(initial_v)
 		self.dt = dt
 		self.name = name
+	
+	def modulus(self, vector: np.array):
+		"""
+		Returns the absolute value of a vector.
+
+		Arguments:
+		---
+		vector (numpy.array): The vector quantity.
+
+		Returns:
+		---
+		total (float): The absolute value.
+		"""
+		total = math.sqrt(sum(vector[i]**2 for i in range(3))) 
+		return total
 
 	def force(self, particles: list) -> np.array:
-		epsilon = 1e16
 		force = np.zeros(3)
 		for p in particles:
 			if p is not self:
 				relative_pos = (self.pos - p.pos)
-				distance = modulus(relative_pos)
-				force += - self.G * self.mass * p.mass * relative_pos / ((distance**2 + epsilon**2) ** (3/2))
+				distance = self.modulus(relative_pos)
+				force += - self.G * self.mass * p.mass * relative_pos / distance**3
 		return force
 	
 	def calc_next_v(self, particles: list) -> np.array:
@@ -60,7 +75,7 @@ class Particle():
 		return half_pos
 		
 	def calc_kinetic_energy(self) -> float:
-		KE = 0.5 * self.mass * (modulus(self.v))**2
+		KE = 0.5 * self.mass * (self.modulus(self.v))**2
 		return KE
 	
 	def calc_potential_energy(self, particles: list) -> float:
@@ -69,7 +84,7 @@ class Particle():
 		for p in particles:
 			if p is not self:
 				relative_pos = (half_pos - p.pos)
-				distance = modulus(relative_pos)
+				distance = self.modulus(relative_pos)
 				PE += - self.G * self.mass * p.mass / distance
 		return PE
 
