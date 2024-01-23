@@ -25,7 +25,7 @@ class Particle():
 		name (str): The name of the particle.
 		"""
 		self.G = 6.67*10**-11
-		self.epsilon = 1e17
+		self.epsilon = 0
 		self.mass = mass
 		self.pos = np.array(initial_pos)
 		self.v = np.array(initial_v)
