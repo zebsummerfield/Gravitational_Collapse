@@ -33,11 +33,6 @@ def permutate_v_multi(target, particles: np.array):
 	target.set_new_v()
 	return target
 
-def permutate_pos_multi(target):
-	target.calc_next_pos()
-	target.set_new_pos()
-	return target
-
 def permutate_tree(tree: Node, particles: np.array):
 	for p in particles:
 		p.calc_next_v_tree(tree)
@@ -45,3 +40,13 @@ def permutate_tree(tree: Node, particles: np.array):
 	for p in particles:
 		p.calc_next_pos()
 		p.set_new_pos()
+
+def permutate_tree_v_multi(target, tree: Node):
+	target.calc_next_v_tree(tree)
+	target.set_new_v()
+	return target
+
+def permutate_pos_multi(target):
+	target.calc_next_pos()
+	target.set_new_pos()
+	return target

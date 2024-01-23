@@ -25,7 +25,7 @@ class Particle():
 		name (str): The name of the particle.
 		"""
 		self.G = 6.67*10**-11
-		self.epsilon = 1e16
+		self.epsilon = 1e17
 		self.mass = mass
 		self.pos = np.array(initial_pos)
 		self.v = np.array(initial_v)
@@ -39,7 +39,7 @@ class Particle():
 			if p is not self:
 				relative_pos = (self.pos - p.pos)
 				d = modulus(relative_pos)
-				fieldnoG += p.mass * relative_pos / ((d**2 + self.epsilon**2) ** (3/2))
+				fieldnoG += p.mass * relative_pos / (np.sqrt(d**2 + self.epsilon**2) ** 3)
 		force = fieldnoG * (- self.G * self.mass)
 		return force
 		
@@ -57,11 +57,12 @@ class Particle():
 	def tree_walk(self, node: Node) -> np.array:
 		relative_pos = (self.pos - node.com)
 		d = modulus(relative_pos)
-		if len(node.children) == 0 or node.length / d < 0.5:
-			self.field_no_G += node.mass * relative_pos / ((d**2 + self.epsilon**2) ** (3/2))
-		else:
-			for c in node.children:
-				self.tree_walk(c)
+		if d > 0:
+			if len(node.children) == 0 or node.length / d < 0.5:
+				self.field_no_G += node.mass * relative_pos / (np.sqrt(d**2 + self.epsilon**2) ** 3)
+			else:
+				for c in node.children:
+					self.tree_walk(c)
 	
 	def calc_next_v_tree(self, tree: Node) -> np.array:
 		force = self.force_tree(tree)

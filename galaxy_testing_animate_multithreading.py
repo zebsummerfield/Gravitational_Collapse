@@ -13,7 +13,7 @@ from multiprocessing import Pool
 
 solar_mass = 2e30
 galaxy_mass = 1e12 * solar_mass
-num = 1000
+num = 500
 mega_particle_mass = (galaxy_mass / num) * 0.5
 galaxy_radius = 5e20
 dt = 10000 * 365 * 24 * 3600
