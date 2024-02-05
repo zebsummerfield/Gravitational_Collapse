@@ -8,10 +8,9 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 import matplotlib.patches as patches
 
-
 solar_mass = 2e30
 galaxy_mass = 1e12 * solar_mass
-num = 5000
+num = 1000
 mega_particle_mass = (galaxy_mass / num) * 0.5
 galaxy_radius = 5e20
 dt = 10000 * 365 * 24 * 3600
@@ -30,9 +29,9 @@ particles = np.array(particles)
 # print(time.time() - t)
 
 fig, ax = plt.subplots(figsize=(10,10))
-plot = ax.plot(positions[:,0], positions[:,1], marker='o', linestyle='none', markersize=2)
+ax.set_axis_off()
+ax.plot(positions[:,0], positions[:,1], marker='o', linestyle='none', markersize=2)
 ax.plot(particles[0].pos[0], particles[0].pos[1], marker='o', markersize=5, color="lime")
-
 
 t = time.time()
 tree = Node(np.zeros(3), 1e21, particles)

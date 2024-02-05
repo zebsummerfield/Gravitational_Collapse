@@ -23,16 +23,16 @@ if __name__ == "__main__":
     for pos in positions:
         particles.append(Particle(mega_particle_mass, [pos[0], pos[1], 0], [pos[2], pos[3], 0], dt=dt))
 
-    # t = time.time()
-    # permutate(particles)
-    # fs = time.time() - t
+    t = time.time()
+    permutate(particles)
+    fs = time.time() - t
 
-    # t = time.time()
-    # with Pool() as pool:
-    #     particles = pool.starmap(permutate_v_multi, [(p, particles) for p in particles])
-    # for p in particles:
-    #     permutate_pos_multi(p)
-    # fp = time.time() - t
+    t = time.time()
+    with Pool() as pool:
+        particles = pool.starmap(permutate_v_multi, [(p, particles) for p in particles])
+    for p in particles:
+        permutate_pos_multi(p)
+    fp = time.time() - t
 
     t = time.time()
     tree = Node(np.zeros(3), 1e21, np.array(particles))
@@ -47,8 +47,8 @@ if __name__ == "__main__":
         permutate_pos_multi(p)
     bp = time.time() - t
 
-    # print('Brute Force serial: ' + str(fs))
-    # print('Brute force parallel: ' + str(fp))
+    print('Brute Force serial: ' + str(fs))
+    print('Brute Force Parallel: ' + str(fp))
     print('Barnes Hut Serial: ' + str(bs))
     print('Barnes Hut Parallel: ' + str(bp))
 
