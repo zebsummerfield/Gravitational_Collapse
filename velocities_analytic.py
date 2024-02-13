@@ -1,42 +1,72 @@
+"""
+Analytical functions for a galactic disc.
+"""
+
 import numpy as np
 import scipy.special as sp
 import matplotlib.pyplot as plt
 
 G = 6.67*10**-11
-epsilon = 2e19
+epsilon = 3e19
 
 def gen_diff_potential(r: float, density0: float, Rh: float, mass_c: float) -> float:
+    """
+    Returns the differential of potential at a distance r from the centre of the disc.
+    """
     y = r / (2 * Rh)
     return (4 * np.pi * G * density0 * Rh * y**2 *(sp.i0(y) * sp.k0(y) - sp.i1(y) * sp.k1(y)) + G * r * mass_c / (r**2 + epsilon**2)) / r
 
 def gen_v(r: float, density0: float, Rh: float) -> float:
+    """
+    Returns the velocity of a particle at a distance r from the centre of the disc not including a central mass.
+    """
     y = r / (2 * Rh)
     return np.sqrt((4 * np.pi * G * density0 * Rh * y**2 *(sp.i0(y) * sp.k0(y) - sp.i1(y) * sp.k1(y))))
 
 def gen_v_wcm(r: float, density0: float, Rh: float, mass_c: float) -> float:
+    """
+    Returns the velocity of a particle at a distance r from the centre of the disc which includes a central mass.
+    """
     y = r / (2 * Rh)
     return np.sqrt((4 * np.pi * G * density0 * Rh * y**2 *(sp.i0(y) * sp.k0(y) - sp.i1(y) * sp.k1(y))) + G * r * mass_c / (r**2 + epsilon**2))
     
 def gen_angular_v(r: float, density0: float, Rh: float, mass_c: float) -> float:
+    """
+    Returns the angular velocity of a particle at a distance r from the centre of the disc.
+    """
     return gen_v_wcm(r, density0, Rh, mass_c) / r
 
 def gen_diff_diff_potential(r: float, density0: float, Rh: float, mass_c: float, dx=1e16) -> float:
+    """
+    Returns the second differential of potential at a distance r from the centre of the disc.
+    """
     return (gen_diff_potential(r + dx, density0, Rh, mass_c) - gen_diff_potential(r - dx, density0, Rh, mass_c)) / (2*dx)
 
 def gen_epicyclic(r: float, density0: float, Rh: float, mass_c: float) -> float:
+    """
+    Returns the epicyclic frequency of a particle's orbit at a distance r from the centre of the disc.
+    """
     term1 = 3 * gen_v_wcm(r , density0, Rh, mass_c)**2 / r**2
     term2 = gen_diff_diff_potential(r , density0, Rh, mass_c)
     return np.sqrt(term1 + term2)
 
 def gen_density(r: float, density0: float, Rh: float) -> float:
+    """
+    Returns the mass density of the disc at a distance r from the centre of the disc.
+    """
     return density0 * np.exp(-r/Rh)
 
 def gen_v_dispersion_radial(r: float, density0: float, Rh: float, mass_c: float, h=1.2) -> float:
+    """
+    Returns the radial dispersion velocity of the disc at a distance r from the centre of the disc.
+    """
     return h * 3.36 * G * gen_density(r, density0, Rh) / gen_epicyclic(r, density0, Rh, mass_c)
 
 def gen_v_dispersion_azimuthal(r: float, density0: float, Rh: float, mass_c: float, h=1.2) -> float:
+    """
+    Returns the azimuthal dispersion velocity of the disc at a distance r from the centre of the disc.
+    """
     return gen_v_dispersion_radial(r, density0, Rh, mass_c, h=h) * gen_epicyclic(r, density0, Rh, mass_c) / (2 * gen_angular_v(r, density0, Rh, mass_c))
-
 
 
 if __name__ =='__main__':

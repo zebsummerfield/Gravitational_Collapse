@@ -1,3 +1,8 @@
+"""
+Demonstrates the building of the Barnes-Hut tree.
+"""
+
+
 import numpy as np
 from particle import Particle
 import distributions

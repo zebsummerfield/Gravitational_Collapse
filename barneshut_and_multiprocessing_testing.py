@@ -1,3 +1,8 @@
+"""
+Benchmarks the Barnes-Hut and the parallel methods of force calculation against computing time.
+"""
+
+
 import numpy as np
 from particle import Particle
 import distributions

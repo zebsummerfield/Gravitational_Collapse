@@ -25,7 +25,8 @@ class Particle():
 		name (str): The name of the particle.
 		"""
 		self.G = 6.67*10**-11
-		self.epsilon = 2e19
+		self.epsilon = 3e19
+		self.theta = 0.5
 		self.mass = mass
 		self.pos = np.array(initial_pos)
 		self.v = np.array(initial_v)
@@ -62,7 +63,7 @@ class Particle():
 		relative_pos = (self.pos - node.com)
 		d = modulus(relative_pos)
 		if d > 0:
-			if len(node.children) == 0 or node.length / d < 0.5:
+			if len(node.children) == 0 or node.length / d < self.theta:
 				self.field_no_G += node.mass * relative_pos / (np.sqrt(d**2 + self.epsilon**2) ** 3)
 			else:
 				for child in node.children:
@@ -122,11 +123,12 @@ class Particle():
 	
 	def calc_potential_energy(self, particles: list) -> float:
 		half_pos = self.calc_half_pos()
-		PE = 0
+		PE_noG = 0
 		for p in particles:
 			if p is not self:
-				relative_pos = (half_pos - p.pos)
-				PE += - self.G * self.mass * p.mass / np.sqrt(modulus(relative_pos)**2 + self.epsilon**2)
+				relative_r = modulus(half_pos - p.pos)
+				PE_noG += (p.mass / np.sqrt(relative_r**2 + self.epsilon**2)) * (relative_r**2 / (relative_r**2 + self.epsilon**2))
+		PE = - self.G * self.mass * PE_noG
 		return PE
 	
 	def potential_tree(self, tree: Node) -> float:
@@ -139,7 +141,7 @@ class Particle():
 		relative_pos = (self.pos - node.com)
 		d = modulus(relative_pos)
 		if d > 0:
-			if len(node.children) == 0 or node.length / d < 0.5:
+			if len(node.children) == 0 or node.length / d < self.theta:
 				self.potential_no_G += node.mass / np.sqrt(d**2 + self.epsilon**2)
 			else:
 				for child in node.children:

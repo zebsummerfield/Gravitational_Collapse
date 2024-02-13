@@ -1,5 +1,5 @@
 """
-Implementation of the barnes-hut approximation.
+Implementation of the barnes-hut approximation including the definition of the Node class.
 """
 
 import numpy as np

@@ -21,6 +21,9 @@ def modulus(vector: np.array) -> float:
 		return total
 
 def permutate(particles: np.array):
+	"""
+	Permutes the positions and velocities of a system of particles using the serial brute force method.
+	"""
 	for p in particles:
 		p.calc_next_v(particles)
 		p.set_new_v()
@@ -29,11 +32,17 @@ def permutate(particles: np.array):
 		p.set_new_pos()
 
 def permutate_v_multi(target, particles: np.array):
+	"""
+	Permutes the velocities of a system of particles using the parallel brute force method.
+	"""
 	target.calc_next_v(particles)
 	target.set_new_v()
 	return target
 
 def permutate_tree(tree: Node, particles: np.array):
+	"""
+	Permutes the positions and velocities of a system of particles using the serial Barnes-Hut method.
+	"""
 	for p in particles:
 		p.calc_next_v_tree(tree)
 		p.set_new_v()
@@ -42,11 +51,17 @@ def permutate_tree(tree: Node, particles: np.array):
 		p.set_new_pos()
 
 def permutate_tree_v_multi(target, tree: Node):
+	"""
+	Permutes the velocities of a system of particles using the parallel Barnes-Hut method.
+	"""
 	target.calc_next_v_tree(tree)
 	target.set_new_v()
 	return target
 
 def permutate_pos_multi(target):
+	"""
+	Permutes the positions of a system of particles using the parallel method.
+	"""
 	target.calc_next_pos()
 	target.set_new_pos()
 	return target

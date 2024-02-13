@@ -1,3 +1,8 @@
+"""
+Loads the particle system evolution times and plots them.
+"""
+
+
 import numpy as np
 from particle import Particle
 import distributions

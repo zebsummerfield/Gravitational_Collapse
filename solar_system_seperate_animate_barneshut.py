@@ -1,5 +1,5 @@
 """
-Animates the orbits of the [sun, earth, jupiter] system in seperate plots.
+Animates the orbits of the [sun, earth, jupiter] system in seperate plots using the Barnes-Hut approximation.
 """
 
 import matplotlib.pyplot as plt
@@ -57,7 +57,7 @@ axes[3].set_axis_off()
 time_text = axes[3].text(0.1, 0.5, 'Time Passed = 0 days', fontsize=15)
 
 def update(frame):
-	tree = Node(np.zeros(3), 1e21, particles)
+	tree = Node(np.zeros(3), 1e12, particles)
 	permutate_tree(tree, particles)
 	for index, p in enumerate(particles):
 		x_pos[p].append(p.pos[0])

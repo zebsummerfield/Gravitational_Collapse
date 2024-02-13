@@ -1,5 +1,5 @@
 """
-Generating a test galaxy of stars.
+Animates a disc galaxy evolved with a parralel computing brute force method.
 """
 
 import numpy as np

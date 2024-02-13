@@ -1,5 +1,5 @@
 """
-Generating a test galaxy of stars.
+Animates a disc galaxy evolved with a serial Barnes-Hut method.
 """
 
 import numpy as np
@@ -37,11 +37,11 @@ for p in particles:
 mpl.rcParams["font.size"] = 15
 fig, ax = plt.subplots(figsize=(10,10))
 ax.plot(np.array(distances)/(pc*1000), np.array(velocities)/1000, linestyle='none', marker='o', markersize=2, label='Velocity Magnitudes')
-#ax.plot(np.array(distances)/(pc*1000), np.array(dispersions_radial)/1000, linestyle='none', marker='o', markersize=2, label='Radial Dispersions')
-#ax.plot(np.array(distances)/(pc*1000), np.array(dispersions_azimuthal)/1000, linestyle='none', marker='o', markersize=2, label='Azimuthal Dispersions')
+ax.plot(np.array(distances)/(pc*1000), np.array(dispersions_radial)/1000, linestyle='none', marker='o', markersize=2, label='Radial Dispersions')
+ax.plot(np.array(distances)/(pc*1000), np.array(dispersions_azimuthal)/1000, linestyle='none', marker='o', markersize=2, label='Azimuthal Dispersions')
 ax.set_xlabel('Distance from centre [$kpc$]')
 ax.set_ylabel('Speed [$kms^{-1}$]')
-# plt.legend()
+plt.legend()
 plt.show()
 
 fig, axes = plt.subplots(1, 3, figsize=(24,8))
@@ -63,6 +63,8 @@ hist = axes[2].hist(radii, bins=20)
 
 def update(frame, particles):
 	print(frame)
+	if frame == 1000:
+		np.save('particles_1000', particles, allow_pickle=True)
 	positions = np.zeros((len(particles),3))
 	radii = np.zeros(len(particles))
 	tree = Node(np.zeros(3), 1e21, particles)
@@ -70,7 +72,7 @@ def update(frame, particles):
 		energy = 0
 		for p in particles:
 			energy += p.calc_total_energy(tree)
-		energy_text.set_text(f'Fractional Energy = {(energy/start_energy):.3}')
+		energy_text.set_text(f'Fractional Energy = {(energy/start_energy):.3f}')
 	permutate_tree(tree, particles)
 	for index, p in enumerate(particles):
 		positions[index] = p.pos

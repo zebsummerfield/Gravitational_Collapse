@@ -1,3 +1,8 @@
+"""
+Benchmarks the 4 methods of particle system evolution for different numbers of particles and saves the times to a json.
+"""
+
+
 import numpy as np
 from particle import Particle
 import distributions

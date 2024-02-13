@@ -1,5 +1,5 @@
 """
-Generating a galaxy of stars distributed normally.
+Generates a galaxy of stars distributed normally.
 """
 
 import numpy as np

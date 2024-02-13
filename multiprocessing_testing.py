@@ -1,3 +1,7 @@
+"""
+Testing the computing time of the parallel computing method.
+"""
+
 import numpy as np
 from particle import Particle
 import distributions
