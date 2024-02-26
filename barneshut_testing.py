@@ -12,17 +12,14 @@ from barneshut import Node
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 import matplotlib.patches as patches
+from constants import *
 
-solar_mass = 2e30
-galaxy_mass = 1e12 * solar_mass
 num = 1000
-mega_particle_mass = (galaxy_mass / num) * 0.5
+mega_particle_mass = (disc_mass / num) * 0.5
 galaxy_radius = 5e20
 dt = 10000 * 365 * 24 * 3600
-pc = 3.086e16
-scale_length = 3 * 1000 * pc
 
-positions = distributions.normal_circle(galaxy_mass, galaxy_radius, num)
+positions = distributions.normal_circle(disc_mass, galaxy_radius, num)
 # positions = distributions.disc_exp(galaxy_mass, scale_length, num)
 particles = []
 for pos in positions:
@@ -61,7 +58,7 @@ def add_target_rect_to_plot(p: Particle, node: Node, ax: Axes):
     relative_pos = (p.pos - node.com)
     d = modulus(relative_pos)
     if d > 0:
-        if len(node.children) == 0 or node.length / d < 0.5:
+        if len(node.children) == 0 or node.length / d < theta:
             square = patches.Rectangle((node.centre[0]-(node.length/2), node.centre[1]-(node.length/2)), node.length, node.length, linewidth=1, edgecolor='r', facecolor='none')
             ax.add_patch(square)
         else:

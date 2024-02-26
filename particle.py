@@ -5,6 +5,7 @@ File containing the definition of the Particle class.
 import numpy as np
 from utils import modulus
 from barneshut import Node
+import constants
 
 class Particle():
 	"""
@@ -24,9 +25,9 @@ class Particle():
 		dt (float): The time step in the leap-frog simulation in seconds.
 		name (str): The name of the particle.
 		"""
-		self.G = 6.67*10**-11
-		self.epsilon = 3e19
-		self.theta = 0.5
+		self.G = constants.G
+		self.epsilon = constants.epsilon
+		self.theta = constants.theta
 		self.mass = mass
 		self.pos = np.array(initial_pos)
 		self.v = np.array(initial_v)
@@ -77,7 +78,7 @@ class Particle():
 	def set_new_v(self):
 		self.v = self.next_v
 	
-	def set_circ_v(self, particles: list, density0: float, Rh: float, h=1.2, dr=1e16):
+	def set_circ_v(self, particles: list):
 		r = modulus(self.pos)
 		if r == 0:
 			self.v = np.zeros(3)
@@ -88,10 +89,6 @@ class Particle():
 			v = np.sqrt(r * rad_force / self.mass)
 			v_dir = np.cross(self.pos/r, [0,0,1]) 
 			self.v = v * v_dir * 1
-			# sigma_v = self.v_dispersion(particles[condition], density0, Rh, h, dr)
-			# self.sigma_v = sigma_v
-			# theta = 2*np.pi * np.random.random()
-			# self.v += np.array([np.cos(theta), np.sin(theta), 0]) * np.random.normal(0, sigma_v)
 
 	def v_dispersion(self, particles: list, density0: float, Rh: float, h: float, dr: float) -> float:
 		r = modulus(self.pos)
@@ -126,8 +123,8 @@ class Particle():
 		PE_noG = 0
 		for p in particles:
 			if p is not self:
-				relative_r = modulus(half_pos - p.pos)
-				PE_noG += (p.mass / np.sqrt(relative_r**2 + self.epsilon**2)) * (relative_r**2 / (relative_r**2 + self.epsilon**2))
+				d = modulus(half_pos - p.pos)
+				PE_noG += (p.mass / np.sqrt(d**2 + self.epsilon**2))
 		PE = - self.G * self.mass * PE_noG
 		return PE
 	
@@ -145,7 +142,7 @@ class Particle():
 				self.potential_no_G += node.mass / np.sqrt(d**2 + self.epsilon**2)
 			else:
 				for child in node.children:
-					self.tree_walk(child)
+					self.tree_walk_potential(child)
 	
 	def calc_total_energy(self, tree: Node) -> float:
 		return self.calc_kinetic_energy() + self.potential_tree(tree)
@@ -153,6 +150,3 @@ class Particle():
 	def calc_momentum(self) -> np.array:
 		momentum = self.mass * self.v
 		return momentum
-
-
-

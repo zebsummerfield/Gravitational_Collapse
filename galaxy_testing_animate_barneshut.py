@@ -11,19 +11,15 @@ from utils import *
 import sys
 from velocities_analytic import *
 import matplotlib as mpl
+from constants import *
+import time
 
-solar_mass = 2e30
-galaxy_mass = 1e11 * solar_mass
 num = 1000
-mega_particle_mass = (galaxy_mass / num) * 1
-year_in_s = 365 * 24 * 3600
+mega_particle_mass = (disc_mass / num) * 1
 dt = 100000 * year_in_s
-pc = 3.086e16
-scale_length = 3 * 1000 * pc
-density0 = galaxy_mass / (2 * np.pi * scale_length**2)
 sys.setrecursionlimit(10000)
 
-particles = np.array(distributions.disc_exp(galaxy_mass, scale_length, num, dt=dt, mass_c=0.2*galaxy_mass, h=1))
+particles = np.array(distributions.disc_exp(disc_mass, scale_radius, num, dt=dt, mass_c=centre_mass, h=1))
 
 distances = []
 velocities = []
@@ -32,8 +28,8 @@ dispersions_azimuthal = []
 for p in particles:
 	distances.append(modulus(p.pos))
 	velocities.append(modulus(p.v))
-	dispersions_radial.append(gen_v_dispersion_radial(modulus(p.pos), density0, scale_length, 0.2*galaxy_mass))
-	dispersions_azimuthal.append(gen_v_dispersion_azimuthal(modulus(p.pos), density0, scale_length, 0.2*galaxy_mass))
+	dispersions_radial.append(gen_v_dispersion_radial(modulus(p.pos), disc_density0, scale_radius, centre_mass))
+	dispersions_azimuthal.append(gen_v_dispersion_azimuthal(modulus(p.pos), disc_density0, scale_radius, centre_mass))
 mpl.rcParams["font.size"] = 15
 fig, ax = plt.subplots(figsize=(10,10))
 ax.plot(np.array(distances)/(pc*1000), np.array(velocities)/1000, linestyle='none', marker='o', markersize=2, label='Velocity Magnitudes')
@@ -52,7 +48,8 @@ start_energy = 0
 for index, p in enumerate(particles):
 	positions[index] = p.pos
 	radii[index] = modulus(p.pos)
-	start_energy += p.calc_total_energy(tree)
+	start_energy += p.calc_kinetic_energy()
+	start_energy += p.potential_tree(tree) * 0.5
 plot = axes[0].plot(positions[:,0], positions[:,1], marker='o', linestyle='none', markersize=1)[0]
 axes[0].set_xlim(-3e20,3e20)
 axes[0].set_ylim(-3e20,3e20)
@@ -63,6 +60,7 @@ hist = axes[2].hist(radii, bins=20)
 
 def update(frame, particles):
 	print(frame)
+	t = time.time()
 	if frame == 1000:
 		np.save('particles_1000', particles, allow_pickle=True)
 	positions = np.zeros((len(particles),3))
@@ -71,7 +69,8 @@ def update(frame, particles):
 	if frame%10 == 0:
 		energy = 0
 		for p in particles:
-			energy += p.calc_total_energy(tree)
+			energy += p.calc_kinetic_energy()
+			energy += p.potential_tree(tree) * 0.5
 		energy_text.set_text(f'Fractional Energy = {(energy/start_energy):.3f}')
 	permutate_tree(tree, particles)
 	for index, p in enumerate(particles):
@@ -82,6 +81,7 @@ def update(frame, particles):
 	time_text.set_text(f'Time Passed = {round((frame+1) * dt/(1000000*year_in_s), 1):.1f} Myrs')
 	axes[2].clear()
 	axes[2].hist(radii, bins=20)
+	print((time.time()-t))
 	return (plot, time_text, energy_text)
 
 ani = animation.FuncAnimation(fig, update,  frames=100000, fargs=([particles]), interval=10)

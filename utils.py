@@ -65,3 +65,14 @@ def permutate_pos_multi(target):
 	target.calc_next_pos()
 	target.set_new_pos()
 	return target
+
+def COM(particles):
+	"""
+	Returns the centre of mass of a system of particles.
+	"""
+	COM = np.zeros(3)
+	M = 0
+	for p in particles:
+		COM += p.mass * p.pos
+		M += p.mass
+	return COM / M

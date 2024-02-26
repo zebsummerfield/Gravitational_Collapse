@@ -4,15 +4,10 @@ Loads and shows the state of a system of particles after 1000 permutations.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import distributions
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 from utils import *
-import sys
 from velocities_analytic import *
 import matplotlib as mpl
-
-
 
 particles = np.load('particles_1000.npy', allow_pickle=True)
 

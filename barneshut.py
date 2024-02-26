@@ -37,7 +37,8 @@ class Node:
             for j in range(2):
                 for k in range(2):
                     child_centre = self.centre + 0.5*self.length*(np.array([i,j,k])-0.5)
-                    child_particles = particles[[particles.pos[i] > (self.centre/2)[i] for i in range(3)] == [i,j,k]]
+                    condition = np.array([[p.pos[i] > self.centre[i] for i in range(3)] == [i,j,k] for p in particles])
+                    child_particles = particles[condition]
                     if len(child_particles) > 0:
                         self.children.append(Node(child_centre, self.length/2, child_particles, oct=True))
     

@@ -2,14 +2,6 @@
 Loads the particle system evolution times and plots them.
 """
 
-
-import numpy as np
-from particle import Particle
-import distributions
-from utils import *
-import time
-from barneshut import Node
-from multiprocessing import Pool
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import json
