@@ -14,9 +14,10 @@ import matplotlib as mpl
 from constants import *
 import time
 from particle import Particle
+from kolmogorov_smirnov import KS_test
 
-num_disc = 100
-num_halo = 199
+num_disc = 250
+num_halo = 500
 dt = 100000 * year_in_s
 sys.setrecursionlimit(10000)
 
@@ -44,8 +45,8 @@ for p in disc_particles:
 	dispersions_azimuthal.append(v_dispersion_azimuthal(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0))
 	p.set_circ_v(total_particles)
 	velocities_numeric. append(modulus(p.v))
-	p.v += (p.v / modulus(p.v)) * np.random.normal(0, v_dispersion_azimuthal(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=0))
-	p.v += (p.pos / modulus(p.pos)) * np.random.normal(0, v_dispersion_radial(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=0))
+	p.v += (p.v / modulus(p.v)) * np.random.normal(0, v_dispersion_azimuthal(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=1))
+	p.v += (p.pos / modulus(p.pos)) * np.random.normal(0, v_dispersion_radial(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=1))
 	velocities_post_dispersion. append(modulus(p.v))
 mpl.rcParams["font.size"] = 15
 fig, ax = plt.subplots(figsize=(10,10))
@@ -98,7 +99,7 @@ def update(frame, particles):
 		for p in particles[3]:
 			energy += p.calc_kinetic_energy()
 			energy += p.potential_tree(tree) * 0.5
-		print((f'Frame = {frame},  Time Passed = {round((frame+1) * dt/(100000*year_in_s), 1):.1f} Myrs Fractional Change in Energy = {(energy/start_energy):.g}'))
+		print((f'\nFrame = {frame},  Time Passed = {round((frame+1) * dt/(100000*year_in_s), 1):.1f} Myrs Fractional Change in Energy = {(energy/start_energy):.5g}'))
 
 	permutate_tree(tree, particles[3])
 	plot3D_centre.set_xdata(particles[0][0].pos[0])
@@ -107,9 +108,12 @@ def update(frame, particles):
 
 	disc_positions = np.zeros((len(particles[1]),3))
 	radii = np.zeros(len(particles[1]))
-	for index, p in enumerate(particles[1]):
+	z =np.zeros(len(particles[1]))
+	com = COM(np.concatenate((centre_particle, disc_particles)))
+	for index, p in enumerate(disc_particles):
 		disc_positions[index] = p.pos
-		radii[index] = modulus(p.pos)
+		radii[index] = modulus((p.pos - com)[:2])
+		z[index] = ((p.pos-com)[2])
 	plot3D_disc.set_xdata(disc_positions[:,0])
 	plot3D_disc.set_ydata(disc_positions[:,1])
 	plot3D_disc.set_3d_properties(disc_positions[:,2])
@@ -123,7 +127,8 @@ def update(frame, particles):
 
 	axes[1].clear()
 	axes[1].hist(radii, bins=20)
-	print((time.time()-t))
+	print(f'Frame = {frame}, Permutation Time = {(time.time()-t):.5g}, K-S test_statistic = {max(KS_test(radii, scale_radius)):.5g}')
+	print((np.array((np.mean(z), np.std(z))) / pc))
 	return (plot3D_centre, plot3D_disc, plot3D_halo)
 
 ani = animation.FuncAnimation(fig, update,  frames=100000, fargs=([[centre_particle, disc_particles, halo_particles, total_particles]]), interval=10)

@@ -16,9 +16,9 @@ import time
 from particle import Particle
 from kolmogorov_smirnov import KS_test
 
-num_disc = 100
-num_halo = 200
-dt = 100000 * year_in_s
+num_disc = 500
+num_halo = 1000
+dt = 1000000 * year_in_s
 sys.setrecursionlimit(10000)
 
 centre_particle = np.array([Particle(centre_mass, [0,0,0], [0,0,0], dt=dt)])
@@ -45,8 +45,8 @@ for p in disc_particles:
 	dispersions_azimuthal.append(v_dispersion_azimuthal(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0))
 	p.set_circ_v(total_particles)
 	velocities_numeric. append(modulus(p.v))
-	p.v += (p.v / modulus(p.v)) * np.random.normal(0, v_dispersion_azimuthal(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=1))
-	p.v += (p.pos / modulus(p.pos)) * np.random.normal(0, v_dispersion_radial(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=1))
+	p.v += (p.v / modulus(p.v)) * np.random.normal(0, v_dispersion_azimuthal(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=4))
+	p.v += (p.pos / modulus(p.pos)) * np.random.normal(0, v_dispersion_radial(modulus(p.pos), scale_radius, halo_scale_radius, centre_mass, disc_density0, halo_density0, Q=4))
 	velocities_post_dispersion. append(modulus(p.v))
 mpl.rcParams["font.size"] = 15
 fig, ax = plt.subplots(figsize=(10,10))
@@ -59,6 +59,11 @@ ax.set_xlabel('Distance from centre [$kpc$]')
 ax.set_ylabel('Speed [$kms^{-1}$]')
 plt.legend()
 plt.show()
+
+#total_particles = np.load('convergence_test_initial_system.npy', allow_pickle=True)
+centre_particle = np.array([total_particles[0]])
+disc_particles = total_particles[1:num_disc+1]
+halo_particles = total_particles[num_disc+1:]
 
 fig, axes = plt.subplots(1, 2, figsize=(20,10))
 positions = np.zeros((len(disc_particles),3))
@@ -84,23 +89,25 @@ def update(frame, particles):
 		np.save('particles_1000', particles[1], allow_pickle=True)
 	positions = np.zeros((len(particles[1]),3))
 	radii = np.zeros(len(particles[1]))
+	z = np.zeros(len(particles[1]))
 	tree = Node(np.zeros(3), 2*virial_radius, particles[3], oct=True)
 	if frame%10 == 0:
 		energy = 0
 		for p in particles[3]:
 			energy += p.calc_kinetic_energy()
 			energy += p.potential_tree(tree) * 0.5
-		print((f'\nFrame = {frame},  Time Passed = {round((frame+1) * dt/(100000*year_in_s), 1):.1f} Myrs Fractional Change in Energy = {(energy/start_energy):.5g}'))
+		print((f'\nFrame = {frame},  Time Passed = {round((frame+1) * dt/(1000000*year_in_s), 1):.1f} Myrs Fractional Change in Energy = {(energy/start_energy):.5g}'))
 	permutate_tree(tree, particles[3])
 	com = COM(np.concatenate((particles[0], particles[1])))
 	for index, p in enumerate(particles[1]):
 		positions[index] = p.pos
-		radii[index] = modulus(p.pos - com)
+		radii[index] = modulus((p.pos - com)[:2])
+		z[index] = ((p.pos-com)[2])
 	plot.set_xdata(positions[:,0])
 	plot.set_ydata(positions[:,1])
 	axes[1].clear()
 	axes[1].hist(radii, bins=20)
-	print(f'Frame = {frame}, Permutation Time = {(time.time()-t):.5g}, K-S test_statistic = {max(KS_test(radii, scale_radius)):.5g}')
+	print(f'Frame = {frame}, Permutation Time = {(time.time()-t):.5g}, K-S test_statistic = {max(KS_test(radii, scale_radius)):.5g}, Vertical Standard Deviation = {np.std(z)/pc}')
 	return (plot)
 
 ani = animation.FuncAnimation(fig, update,  frames=100000, fargs=([[centre_particle, disc_particles, halo_particles, total_particles]]), interval=10)

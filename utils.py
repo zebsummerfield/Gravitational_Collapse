@@ -17,7 +17,7 @@ def modulus(vector: np.array) -> float:
 		---
 		total (float): The absolute value.
 		"""
-		total = np.sqrt(sum(vector[i]**2 for i in range(3))) 
+		total = np.sqrt(sum(vector[i]**2 for i in range(len(vector)))) 
 		return total
 
 def permutate(particles: np.array):

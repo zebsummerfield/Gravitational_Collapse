@@ -24,11 +24,11 @@ def KS_test(positions: list, Rh: float) -> list:
         statistics.append(max(a, b))
     return statistics
 
-def Lower(positions: list, x: float, Dalpha: float) -> float:
-    return max(FS(positions, x) - Dalpha, 0)
+def Lower(r: float, Rh: float, Dalpha: float) -> float:
+    return max(F0(r, Rh) - Dalpha, 0)
 
-def Upper(positions: list, x: float, Dalpha: float) -> float:
-    return min(FS(positions, x) + Dalpha, 1)
+def Upper(r: float, Rh: float, Dalpha: float) -> float:
+    return min(F0(r, Rh) + Dalpha, 1)
 
 if __name__ == "__main__":
     from distributions import disc_all
