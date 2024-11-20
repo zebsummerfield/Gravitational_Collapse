@@ -34,8 +34,6 @@ ax[1].set_axis_off()
 time_text = ax[1].text(0.1, 0.5, 'Time Passed = 0 days', fontsize=30)
 
 def update(frame):
-	if frame == 1:
-		plt.pause(10)
 	for p in particles:
 		p.calc_next_v(particles)
 	for index, p in enumerate(particles):
